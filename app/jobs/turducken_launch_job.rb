@@ -1,8 +1,8 @@
 class TurduckenLaunchJob
   @queue = :mturk
 
-  def self.perform(class_name, job_id)
-    job = class_name.constantize.find(job_id)
+  def self.perform(job_id)
+    job = Turducken::Job.find(job_id)
     #TODO: verify we found the job
 
     h = RTurk::Hit.create(:title => job.title) do |hit|
@@ -10,7 +10,7 @@ class TurduckenLaunchJob
       hit.description     = job.description
       hit.reward          = job.hit_reward
       hit.question_form(job.hit_question)
-      hit.qualifications.add(:country, { :eql => job.market })
+      # hit.qualifications.add(:country, { :eql => job.market })
     end
 
     #TODO: cache the HIT structure for debugging purposes...
@@ -33,6 +33,8 @@ class TurduckenLaunchJob
 
     # if we made it this far, consider the job launched!
     job.launched!
+    job.save
+    puts job.inspect
 
   end
 end

@@ -9,6 +9,7 @@ require 'capybara/rspec'
 Combustion.initialize! :action_controller, :action_view
 require 'rspec/rails'
 require 'capybara/rails'
+require 'webmock/rspec'
 
 # RSpec.configure do |config|
 #   config.use_transactional_fixtures = true
@@ -23,19 +24,27 @@ require 'yaml'
 require 'rturk'
 require 'turducken'
 
-
-
-
 Dir.glob(File.join(File.dirname(__FILE__), '..', 'app', '**/*.rb')).each {|f| require f }
 
 
 @aws = YAML.load(File.open(File.join(SPEC_ROOT, 'aws.yml')))
 RTurk.setup(@aws['AWSAccessKeyId'], @aws['AWSAccessKey'], :sandbox => true)
 
+Turducken.setup(:worker_model => Worker, :callback_host => 'none')
+
+# opts: :filename - name of file within fake_responses directory to return contents of. defaults to operation.underscore
+#       :response - contents to return on the request. if specified, :filename is ignored.
+def mock_turk_operation(operation, opts = {})
+  filename = opts[:filename] || "#{operation.underscore}.xml"
+  response = opts[:response] || File.read(File.join(SPEC_ROOT, 'fake_responses', filename))
+  stub_request(:post, /amazonaws.com/).with(:body => /Operation=#{operation}/).to_return(:body => response)
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 # Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
-# Dir[Rails.root.join("spec/fabricators/**/*.rb")].each {|f| require f}
+
+Dir[File.join(SPEC_ROOT, "fabricators/*.rb")].each {|f| require f}
 
 # VCR.config do |c|
 #   c.cassette_library_dir = Rails.root.join("spec", "vcr")
@@ -44,11 +53,6 @@ RTurk.setup(@aws['AWSAccessKeyId'], @aws['AWSAccessKey'], :sandbox => true)
 # end
 
 RSpec.configure do |config|
-  # == Mock Framework
-  # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
-  # config.mock_with :mocha
-  # config.mock_with :flexmock
-  # config.mock_with :rr
   config.mock_with :rspec
 
   config.before(:suite) do
@@ -58,6 +62,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     DatabaseCleaner.start
+    Resque.inline = false
   end
 
   config.after(:each) do

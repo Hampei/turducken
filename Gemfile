@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem 'rails'           , '3.1.1'
 gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
+gem 'resque'          , :git => 'https://github.com/defunkt/resque.git', :require => 'resque/server'
 
 #mongodb related stuff
 gem 'bson_ext'        , "~> 1.4"

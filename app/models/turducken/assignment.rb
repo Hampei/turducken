@@ -14,7 +14,7 @@ module Turducken
 
     def approve!(feedback = nil)
       RTurk::ApproveAssignment(:assignment_id => assignment_id, :feedback => feedback)
-      status = :approved
+      self.status = 'Approved'
       save
     end
   
@@ -36,7 +36,7 @@ module Turducken
     
     def self.create_or_update_from_mturk(job, rturk_assignment)
       #make sure we have a worker
-      worker = Worker.find_or_create_by(:turk_id => rturk_assignment.source.worker_id)
+      worker = Turducken.worker_model.find_or_create_by(:turk_id => rturk_assignment.source.worker_id)
       
       # get the results
       answers = rturk_assignment.source.answers

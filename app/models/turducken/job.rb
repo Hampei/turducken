@@ -82,11 +82,11 @@ module Turducken
       end
     end
 
+  @@turducken_assignment_callbacks = {}
   [:finished, :accepted, :returned, :abandoned].each do |event|
     class_eval <<-EOF
+      @@turducken_assignment_callbacks[:#{event}] = []
       def self.on_assignment_#{event}(&block)
-        @@turducken_assignment_callbacks ||= {}
-        @@turducken_assignment_callbacks[:#{event}] ||= []
         @@turducken_assignment_callbacks[:#{event}].push block
       end
     EOF
@@ -107,7 +107,7 @@ module Turducken
     end
   
     def do_launch
-      Resque.enqueue(TurduckenLaunchJob, self.class.to_s, self.id)
+      Resque.enqueue(TurduckenLaunchJob, self.id)
     end
 
     def dispose_hit

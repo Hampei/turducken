@@ -6,6 +6,18 @@ A plugin build on top of RTurk to make interaction with amazon turk easier.
 How to use
 ----------
 
+### initializer
+
+puts something like this in config/initializers/turducken.rb
+
+    if Settings[:webhook_host].nil?
+      host = 'http://turducken.herokuapp.com'
+    else
+      host = Settings[:webhook_host]
+    end
+    OurTurk.setup(:callback_host => host)
+
+
 ### Turducken::Job
 
 For any job you want to run on amazon turk create a subclass of Turducken::Job.

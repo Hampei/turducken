@@ -2,8 +2,8 @@ class TurduckenGetAssignmentResultsJob
   @queue = :mturk
 
   def self.perform(hit_id, assignment_id)
-    job = Job.where(:hit_id => hit_id).first
-    hit = job.as_hit
+    job = Turducken::Job.where(:hit_id => hit_id).first
+    hit = RTurk::Hit.new(:id => hit_id)
     assignments = hit.assignments
     
     assignments.each do |ass|
