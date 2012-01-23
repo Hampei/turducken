@@ -55,6 +55,21 @@ Turducken::Assignment contains:
  `assignment_id`: given by mturk
  `answers`: QuestionFormAnswers XML. [api](http://docs.amazonwebservices.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QuestionFormAnswersDataStructureArticle.html)
 
+
+### Survey Controllers
+
+    class JobsController < ActionController::Base
+      include Turducken::Controller
+      after_filter :save_survey_view, :only => :show
+      def show
+        if is_preview?
+          # set some preview data for the job type
+        else
+          # load the real data
+         end
+      end
+    end
+
 requirements
 ------------
 gems:

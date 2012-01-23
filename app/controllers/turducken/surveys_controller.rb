@@ -18,9 +18,9 @@ module Turducken
     
     def show
       job = Turducken::Job.where(:hit_id => params[:hitId]).first
-      @disabled = Turducken::FormHelper::disable_form_fields?(params)
+      @disable = Turducken::FormHelper::disable_form_fields?(params)
       
-      if @disabled
+      if @disable
         @model = job.survey_model_example if job.respond_to? :survey_model_example
       else
         @model = job.survey_model if job.respond_to? :survey_model

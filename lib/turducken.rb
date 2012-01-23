@@ -13,5 +13,6 @@ module Turducken
 end
 
 require 'turducken/form_helper'
+require 'turducken/controller'
 Dir.glob(File.join(File.dirname(__FILE__), 'turducken', 'operations', '*.rb')).each {|f| require f }
 Dir.glob(File.join(File.dirname(__FILE__), 'turducken', '*.rb')).each {|f| require f }
