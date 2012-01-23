@@ -15,8 +15,6 @@ describe TurduckenGetAssignmentResultsJob do
       Turducken::Assignment.where(:assignment_id => @assignment_id).exists?.should be_true
     end
     it 'should have approved the assignment' do
-      puts Turducken::Assignment.where(:assignment_id => @assignment_id).first.approve!
-      puts Turducken::Assignment.where(:assignment_id => @assignment_id).first.inspect
       Turducken::Assignment.where(:assignment_id => @assignment_id).first.approved?.should be_true
     end
     it 'should have created a worker' do
