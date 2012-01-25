@@ -40,6 +40,13 @@ module Turducken
       end
     end
 
+    def self.auto_approve(y=true)
+      @auto_approve = y
+    end
+    def self.auto_approve?
+      @auto_approve
+    end
+
     stateflow do
       state_column :state
       initial :new

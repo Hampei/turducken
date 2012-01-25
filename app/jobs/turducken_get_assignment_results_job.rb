@@ -10,7 +10,6 @@ class TurduckenGetAssignmentResultsJob
       #find this assignment
       if ass.id == assignment_id
         assignment = Turducken::Assignment.create_or_update_from_mturk(job, ass)
-        assignment.approve!
       end
     end
     

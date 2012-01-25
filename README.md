@@ -25,7 +25,8 @@ For any job you want to run on amazon turk create a subclass of Turducken::Job.
 You will often want to implement the following methods instead of saving the whole thing to the database.
 
  `title`: returns title of the job in mturk  
- `hit_question`: returns the XML of the question in mturk QuestionForm format. [api](http://docs.amazonwebservices.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QuestionFormDataStructureArticle.html)  
+ `hit_question`: Should return either the XML of the question in mturk QuestionForm format
+ [api](http://docs.amazonwebservices.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QuestionFormDataStructureArticle.html) or the url of the ExternalForm and a hash of options (`return survey_url, :frame_height => 500, :id => id`)
  `description`: Extra info for mturker on how to complete the mturk task  
  `hit_reward`: money to be paid for task in dollars default 0.10
 
@@ -42,13 +43,19 @@ fields not used at the moment:
 
 #### assignments
 
-Each Job has many assignments, these Assignments usually don't have to be subclassed, instead you handle the events in your Job-class by defining callbacks and using the data in your own datastructures. 
+Each Job has many assignments, these Assignments usually don't have to be subclassed, instead you handle the events in your Job-class by defining callbacks and using the data in your own datastructures.
 
     on_assignment_finished {|assignment| ... }
-    on_assignment_accepted ...
-    on_assignment_returned ...
-    on_assignment_abandoned ...
- 
+    on_assignment_accepted ... TODO - implement in mt_controller
+    on_assignment_returned ...   " 
+    on_assignment_abandoned ...  " 
+
+    # check results, to see if turker has done his job correctly. 
+    # defaults to true.
+    def approve?(assignment)
+      return assignment.answers['foo'] > 50
+    end
+
 Turducken::Assignment contains:
 
  `status`: ['Abandoned', 'Submitted', 'Approved', 'Rejected']

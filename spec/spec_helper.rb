@@ -26,6 +26,7 @@ require 'turducken'
 
 Dir.glob(File.join(File.dirname(__FILE__), '..', 'app', '**/*.rb')).each {|f| require f }
 
+Rails.application.routes.default_url_options[:host]= 'localhost'
 
 @aws = YAML.load(File.open(File.join(SPEC_ROOT, 'aws.yml')))
 RTurk.setup(@aws['AWSAccessKeyId'], @aws['AWSAccessKey'], :sandbox => true)

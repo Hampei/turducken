@@ -10,6 +10,13 @@ module Turducken
       @worker_model = opts[:worker_model] || ::Worker
     end
   end
+  
+  class AssignmentException < Exception
+    attr :feedback
+    def initialize(feedback)
+      @feedback = feedback
+    end
+  end
 end
 
 require 'turducken/form_helper'

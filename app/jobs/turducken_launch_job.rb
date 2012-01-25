@@ -9,7 +9,12 @@ class TurduckenLaunchJob
       hit.max_assignments = job.hit_num_assignments
       hit.description     = job.description
       hit.reward          = job.hit_reward
-      hit.question_form(job.hit_question)
+      hq = job.hit_question
+      if hq.first == '<'
+        hit.question_form(job.hit_question)
+      else
+        hit.question(*hq)
+      end
       # hit.qualifications.add(:country, { :eql => job.market })
     end
 
@@ -34,8 +39,6 @@ class TurduckenLaunchJob
     # if we made it this far, consider the job launched!
     job.launched!
     job.save
-    puts job.inspect
-
   end
 end
       

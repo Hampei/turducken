@@ -28,5 +28,10 @@ module Turducken
        
       render "/turducken/#{job.class.to_s.underscore}" 
     end
+    
+    helper_method :is_preview?
+    def is_preview?
+      Turducken::FormHelper::disable_form_fields?(params)
+    end
   end
 end

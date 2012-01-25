@@ -64,7 +64,7 @@
         &lt;QuestionFormAnswers xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionFormAnswers.xsd"&gt;
         &lt;Answer&gt;
         &lt;QuestionIdentifier&gt;tweet&lt;/QuestionIdentifier&gt;
-        &lt;FreeText&gt;Third tweet&lt;/FreeText&gt;
+        &lt;FreeText&gt;Third tweet - illegal &lt;/FreeText&gt;
         &lt;/Answer&gt;
         &lt;Answer&gt;
         &lt;QuestionIdentifier&gt;Submit&lt;/QuestionIdentifier&gt;

@@ -1,4 +1,5 @@
 source "http://rubygems.org"
+source 'http://gemcutter.org'
 
 gem 'rails'           , '3.1.1'
 gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
@@ -27,12 +28,16 @@ gem "jquery-rails"
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
+# fake rails app to run engine tests in.
+gem 'combustion', '~> 0.3.1'
+
+group :development do
+  gem 'racksh'
+end
+
 group :test do
   gem 'database_cleaner' , '0.6.7'
   
-  # fake rails app to run engine tests in.
-  gem 'combustion', '~> 0.3.1'
-
   # mocks and fake data
   gem 'fabrication'      , '~> 1.2.0'
   gem 'faker'

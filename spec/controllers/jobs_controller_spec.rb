@@ -53,6 +53,25 @@ describe JobsController do
       page.should have_xpath("//input[@type='radio' and @value='Female']/@disabled")
     end
   end
+  
+  describe "round trip" do
+    before do
+      mock_turk_operation("CreateHIT")
+      mock_turk_operation("SetHITTypeNotification")
+      Resque.inline = true
+      @job = Fabricate(:job)
+    end
+    
+    it 'should post to the right ExternalURL' do
+      reg = CGI::escape("ExternalURL>http://localhost/jobs/#{@job.id}")
+      WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ %r~#{reg}~ }
+    end
+    
+    it 'should post the right frameheight' do
+      reg = CGI::escape('FrameHeight>300')
+      WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ %r~#{reg}~ }
+    end
+  end
 
 end
 

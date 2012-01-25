@@ -40,6 +40,7 @@ PATH
 
 GEM
   remote: http://rubygems.org/
+  remote: http://gemcutter.org/
   specs:
     actionmailer (3.1.1)
       actionpack (= 3.1.1)
@@ -133,6 +134,9 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
+    racksh (0.9.10)
+      rack (>= 1.0)
+      rack-test (>= 0.5)
     rails (3.1.1)
       actionmailer (= 3.1.1)
       actionpack (= 3.1.1)
@@ -214,6 +218,7 @@ DEPENDENCIES
   faker
   jquery-rails
   mongoid (~> 2.3.3)
+  racksh
   rails (= 3.1.1)
   resque!
   rspec (~> 2.6.0)
