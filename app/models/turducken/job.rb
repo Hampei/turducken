@@ -24,6 +24,10 @@ module Turducken
     has_many :assignments, :class_name => 'Turducken::Assignment'
   #  has_many :workers, :through => :assignments
 
+    def initialize(attributes = {})
+      super
+    end
+
     after_create do
       launch!
     end
@@ -89,17 +93,23 @@ module Turducken
       end
     end
 
-  @@turducken_assignment_callbacks = {}
-  [:finished, :accepted, :returned, :abandoned].each do |event|
-    class_eval <<-EOF
-      @@turducken_assignment_callbacks[:#{event}] = []
-      def self.on_assignment_#{event}(&block)
-        @@turducken_assignment_callbacks[:#{event}].push block
+  class_attribute :turducken_assignment_callbacks
+  self.turducken_assignment_callbacks = {}
+  class << self
+    [:finished, :accepted, :returned, :abandoned].each do |event|
+      define_method "on_assignment_#{event}" do |&block|
+        self.turducken_assignment_callbacks = self.turducken_assignment_callbacks.dup
+        self.turducken_assignment_callbacks[event] ||= []
+        self.turducken_assignment_callbacks[event] += [block]
       end
-    EOF
+    end
   end
+
   def turducken_assignment_event(assignment, event_type)
-    @@turducken_assignment_callbacks[event_type].each do |block|
+    cb = self.class.turducken_assignment_callbacks
+    puts cb
+    return unless cb and cb[event_type]
+    self.class.turducken_assignment_callbacks[event_type].each do |block|
       instance_exec(assignment, &block)
     end
   end
