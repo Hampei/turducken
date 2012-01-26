@@ -11,9 +11,9 @@ module Turducken
     field :hit_id
     field :hit_type_id
     field :hit_url
-    field :hit_reward, type: Float, :default => 0.10
-    field :hit_num_assignments, type: Integer, :default => 5
-    field :hit_lifetime, type: Integer
+    field :hit_reward, type: Float
+    field :hit_num_assignments, type: Integer
+    field :hit_lifetime_s, type: Integer
     field :hit_question, type: String
 
     field :complete, type: Boolean
@@ -24,8 +24,13 @@ module Turducken
     has_many :assignments, :class_name => 'Turducken::Assignment'
   #  has_many :workers, :through => :assignments
 
+    class_attribute :attributes_defaults
+    self.attributes_defaults = {}
+    def self.set_defaults(attrs = {})
+      self.attributes_defaults = self.attributes_defaults.merge(attrs)
+    end
     def initialize(attributes = {})
-      super
+      super(self.attributes_defaults.merge(attributes))
     end
 
     after_create do
@@ -107,7 +112,6 @@ module Turducken
 
   def turducken_assignment_event(assignment, event_type)
     cb = self.class.turducken_assignment_callbacks
-    puts cb
     return unless cb and cb[event_type]
     self.class.turducken_assignment_callbacks[event_type].each do |block|
       instance_exec(assignment, &block)

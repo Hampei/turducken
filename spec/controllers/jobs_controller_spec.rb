@@ -8,6 +8,13 @@ describe JobsController do
   render_views
   let(:page) { Capybara::Node::Simple.new(@response.body) }
 
+  describe 'job hit_question (tested here, since routes are needed)' do
+    it 'should have the right url' do
+      job = Fabricate(:job)
+      job.hit_question[0].should =~ %r~http://localhost/jobs~
+    end
+  end
+
   describe "GET :show with assignmetId" do
     before do
       job = Fabricate(:job)

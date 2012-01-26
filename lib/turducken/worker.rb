@@ -2,6 +2,8 @@ module Turducken
     module Worker
       def self.included(model)
         model.class_eval do
+          include Mongoid::Document
+
           field :turk_id, :type => String
 
           validates_presence_of :turk_id

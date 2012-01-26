@@ -3,13 +3,14 @@ class Job < Turducken::Job
 
   has_many :workers
   auto_approve
+  set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600
   
-  def survey_model_example
-    Worker.new
+  def title
+    'job title'
   end
   
-  def survey_model
-    Worker.new
+  def description
+    'description of the job'
   end
   
   on_assignment_finished do |assignment|
