@@ -1,13 +1,13 @@
 source "http://rubygems.org"
 source 'http://gemcutter.org'
 
-gem 'rails'           , '3.1.1'
+gem 'rails'           , '3.2.0'
 gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
 gem 'resque'          , :git => 'https://github.com/defunkt/resque.git', :require => 'resque/server'
 
 #mongodb related stuff
-gem 'bson_ext'        , "~> 1.4"
-gem 'mongoid'         , "~> 2.3.3"
+gem 'bson_ext'        , "~> 1.5"
+gem 'mongoid'         , "~> 2.4"
 
 
 # Declare your gem's dependencies in turducken.gemspec.
@@ -43,8 +43,8 @@ group :test do
   gem 'faker'
   
   # test DSLs
-  gem 'rspec'            , '~> 2.6.0'
-  gem 'rspec-rails'      , '2.6.1'
+  gem 'rspec'            , '~> 2.8'
+  gem 'rspec-rails'      , '~> 2.8'
 
   gem 'shoulda-matchers' , '~> 1.0.0'
   gem 'capybara'
