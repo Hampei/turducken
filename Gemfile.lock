@@ -220,8 +220,8 @@ DEPENDENCIES
   racksh
   rails (= 3.2.0)
   resque!
-  rspec (~> 2.6)
-  rspec-rails (~> 2.6)
+  rspec (~> 2.8)
+  rspec-rails (~> 2.8)
   rturk!
   shoulda-matchers (~> 1.0.0)
   stateflow!

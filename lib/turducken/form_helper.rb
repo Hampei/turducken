@@ -5,7 +5,7 @@ module Turducken
 
     # params: 
     def turducken_form_for(record, params, options = {}, &proc)
-      options[:url] = "#{params[:turkSubmitTo]}/mturk/externalSubmit"
+      options[:url] = submit_url(params)
       options[:builder] = TurdurckerFormBuilder
       form_for(record, options) { |f|
          params.each do |k,v|
@@ -25,7 +25,12 @@ module Turducken
     end
     
     private
-    
+
+    def submit_url(params)
+      Turducken.fake_external_submit ? 'turducken/fake_external_submit' :
+        "#{params[:turkSubmitTo]}/mturk/externalSubmit"
+    end
+
     class TurdurckerFormBuilder < ActionView::Helpers::FormBuilder
       helpers = field_helpers + 
         %w(time_zone_select date_select submit) -

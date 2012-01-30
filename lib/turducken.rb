@@ -3,11 +3,12 @@ require 'turducken/engine' if defined?(Rails)
 module Turducken
   
   class << self
-    attr_reader :callback_host, :worker_model
+    attr_reader :callback_host, :worker_model, :fake_external_submit
 
     def setup(opts ={})
       @callback_host = opts[:callback_host]
       @worker_model = opts[:worker_model] || ::Worker
+      @fake_external_submit = opts[:fake_external_submit]
     end
   end
   

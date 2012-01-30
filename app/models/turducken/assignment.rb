@@ -89,6 +89,10 @@ module Turducken
       assignment.status = rturk_assignment.status
       assignment.save
 
+      handle_assignment_event(job, assignment)
+    end
+
+    def self.handle_assignment_event(job, assignment)
       if assignment.submitted?
         begin
           job.turducken_assignment_event(assignment, :finished)
