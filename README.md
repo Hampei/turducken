@@ -18,6 +18,9 @@ How to use
 
 puts something like this in config/initializers/turducken.rb
 
+    RTurk::logger.level = Logger::DEBUG if Rails.env.development?
+    RTurk.setup(ENV["AWSACCESSKEYID"], ENV["AWSSECRETACCESSKEY"], :sandbox => !Rails.env.production?)
+    
     if Settings[:webhook_host].nil?
       host = 'http://turducken.herokuapp.com'
     else
