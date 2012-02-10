@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Turducken::VERSION
   s.authors     = ["Henk van der Veen "]
   s.email       = ["henk.van.der.veen@gmail.com"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/dbgrandi/turducken"
   s.summary     = "Exploring better ways to talk to mTurk"
   s.description = "Exploring better ways to talk to mTurk"
 
