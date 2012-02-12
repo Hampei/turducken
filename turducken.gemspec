@@ -7,11 +7,11 @@ require "turducken/version"
 Gem::Specification.new do |s|
   s.name        = "turducken"
   s.version     = Turducken::VERSION
-  s.authors     = ["Henk van der Veen "]
+  s.authors     = ["Henk van der Veen"]
   s.email       = ["henk.van.der.veen@gmail.com"]
-  s.homepage    = "https://github.com/dbgrandi/turducken"
-  s.summary     = "Exploring better ways to talk to mTurk"
-  s.description = "Exploring better ways to talk to mTurk"
+  s.homepage    = "https://github.com/veracitix/turducken"
+  s.summary     = "Making mTurk a little bit easier."
+  s.description = "Rails engine that adds a mTurk Notification endpoint controller, and some tools for working with Jobs and Workers"
 
   s.files = Dir["{app,config,lib}/**/*"] + ["Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]

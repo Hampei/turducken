@@ -13,7 +13,6 @@ class TurduckenGetAssignmentResultsJob
       end
     end
     
-#    Pusher['veracitix-jobs'].trigger('created', @job.attributes)
   end
 
 end

@@ -9,21 +9,21 @@ module Turducken
     def notifications
       event_types = params.select{ |k,v| k.end_with? "EventType" }
       num_of_events = event_types.size
-    
+      
       Rails.logger.debug "Received #{num_of_events} events from mTurk"
-
+      
       signature = params[:Signature]
       timestamp = params[:Timestamp]
-    
+      
       #hash_string = "AWSMechanicalTurkRequesterNotificationNotify#{params[:Timestamp]}"
-    
+      
       #taking the signature of the hash_string (using our AWS key) should equal
       # the Signature that AWS sent us
-    
+      
       for i in 1..num_of_events do
         event = MturkEvent.new
         event.type          = params["Event.#{i}.EventType"]
-
+        
         #
         # We may get the occasional Ping from Amazon, track it
         # but don't try to pull out info that is not there.
@@ -36,25 +36,22 @@ module Turducken
         end
 
         event.save
-
-        ActiveSupport::Notifications.instrument('veracitix.event', :name => 'mturk.event', :msg => "mTurk event received, type = #{event.type}")
-
+        
         #
         # What type of events do we get from mTurk and what data can we pull from each one.
         # 
-      
         case event.type
-
+        
         when "AssignmentAccepted"
           # perhaps just create an event for this job, but don't keep track of the assignment yet.
-
+          
           # - create an empty Assignment using the AssignmentId
           # job = Job.where(:hit_id => event.hit_id).first
           # assignment = job.assignments.create(:assignment_id => event.assignment_id, :status => :accepted)
-
+          
         when "AssignmentAbandoned"
           # perhaps just create an event for this job, but don't keep track of the assignment yet.
-
+          
           # - This happens when a worker does not complete an assignment within the AssignmentDurationInSeconds
           # - Update Assignment state to Abandoned
           # - We can now see that a worker has abandoned one of our jobs, and use that for internal stats
