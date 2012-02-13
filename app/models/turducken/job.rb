@@ -32,6 +32,12 @@ module Turducken
     def initialize(attributes = {})
       super(self.attributes_defaults.merge(attributes))
     end
+    
+    class_attribute :qualifications
+    self.qualifications = []
+    def self.qualification(symbol, hash)
+      self.qualifications << [symbol, hash]
+    end
 
     after_create do
       launch!

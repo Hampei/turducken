@@ -1,9 +1,12 @@
 class Job < Turducken::Job
-  field :nro_assignments_finished, :default => 0
+  field :nro_assignments_finished, :type => Integer, :default => 0
+  field :market, :type => String, :default => 'UK'
 
   has_many :workers
   auto_approve
   set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600
+  qualification :country, {:eql => Proc.new{market}}
+  qualification :approval_rate, { :gt => 60 }
   
   def title
     'job title'

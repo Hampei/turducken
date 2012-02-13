@@ -44,13 +44,19 @@ puts something like this in config/initializers/turducken.rb
 
     class Job < Turducken::Job
       field :nro_assignments_finished, :default => 0
-    
+      field :market, :type => String, :default => 'UK'
+      
       has_many :workers
       # unless errors are thrown in on_assignment_finished, an assignment is approved automatically.
       auto_approve
     
       # instead of defining function, you can set default values like this. 
       set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600
+      
+      # qualifications can be added using constants or Procs. 
+      # Syntax same as RTurk::Hit.new.qualifications.add
+      qualification :country, {:eql => Proc.new{market}}
+      qualification :approval_rate, { :gt => 60 }
     
       def title
         "title for the job on amazon"
