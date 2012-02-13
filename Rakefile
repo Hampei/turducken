@@ -12,9 +12,6 @@ rescue LoadError
   RDoc::Task = Rake::RDocTask
 end
 
-require File.expand_path('../../config/application.rb', __FILE__)
-# VeracitixCom::Application.load_tasks
-
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new('spec')
 
