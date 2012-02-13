@@ -142,3 +142,10 @@ gems:
     gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
 
 - A resque server, configured in the main app.
+
+
+TODO
+----
+
+- handle missed assignment events from amazon (when restarting app for example)
+  - Could check for all assignments in cronjob. or smarter by remembering latest assignment of last check.
