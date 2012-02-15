@@ -17,13 +17,6 @@ module Turducken
       }
     end
     
-
-    # Returns whether the form fields should be disabled or not (based on the assignment_id)
-    def self.disable_form_fields?(assignment)
-      assignment_id = assignment.is_a?(Hash) ? assignment[:assignmentId] : assignment
-      (assignment_id.nil? || assignment_id.empty? || assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE')
-    end
-    
     private
 
     def submit_url(params)

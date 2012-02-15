@@ -4,7 +4,8 @@ module Turducken
       model.class_eval do
         helper_method :is_preview?
         def is_preview?
-          Turducken::FormHelper::disable_form_fields?(params)
+          assid = params[:assignmentId]
+          (assid.nil? || assid.empty? || assid == 'ASSIGNMENT_ID_NOT_AVAILABLE')
         end
   
         #after_filter :save_survey_view, :only => ...
