@@ -4,7 +4,7 @@ module Turducken
     
     def create
       job = Turducken::Job.where(params['hitId']).first
-      worker = Worker.find_or_create_by(:turk_id => 'fake')
+      worker = Turducken.worker_model.find_or_create_by(:turk_id => 'fake')
       assignment = find_or_initialize_by(:assignment_id => params['assignmentId'])
       assignment.worker = worker
       assignment.answers = params
