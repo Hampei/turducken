@@ -10,6 +10,7 @@ module Turducken
       assignment.answers = params
       assignment.save
       Turducken::Assignment.handle_assignment_event(job, assignment)
+      render :text => 'done'
     end
     
     def check_settings!
