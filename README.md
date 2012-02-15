@@ -58,11 +58,11 @@ puts something like this in config/initializers/turducken.rb
       qualification :country, {:eql => Proc.new{market}}
       qualification :approval_rate, { :gt => 60 }
     
-      def title
+      def hit_title
         "title for the job on amazon"
       end
       
-      def description
+      def hit_description
         "Some info about what the job entails"
       end
       

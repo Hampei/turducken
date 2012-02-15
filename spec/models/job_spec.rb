@@ -12,7 +12,7 @@ describe Job do
   end
   
   it 'should have the right title' do
-    @job.title.should == 'job title'
+    @job.hit_title.should == 'job title'
   end
   
   # it 'should have the right url' do

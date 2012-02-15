@@ -5,8 +5,8 @@ module Turducken
     include Stateflow
     Stateflow.persistence = :mongoid #TODO find better way of doing this. maybe gem load order?
 
-    field :title
-    field :description
+    field :hit_title
+    field :hit_description
     field :hit_question_type # this should be either 'external' or 'questionform'
     field :hit_id
     field :hit_type_id

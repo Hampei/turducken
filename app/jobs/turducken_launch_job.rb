@@ -5,9 +5,9 @@ class TurduckenLaunchJob
     job = Turducken::Job.find(job_id)
     #TODO: verify we found the job
 
-    h = RTurk::Hit.create(:title => job.title) do |hit|
+    h = RTurk::Hit.create(:title => job.hit_title) do |hit|
       hit.max_assignments = job.hit_num_assignments
-      hit.description     = job.description
+      hit.description     = job.hit_description
       hit.reward          = job.hit_reward
       hit.lifetime         = job.hit_lifetime_s
       hq = job.hit_question
