@@ -8,7 +8,9 @@ module Turducken
       assignment = Assignment.find_or_initialize_by(:assignment_id => params['assignmentId'])
       assignment.worker = worker
       assignment.answers = params
+      assignment.status = 'Submitted'
       assignment.save
+      # puts "fake_submit: #{job.inspect} - #{assignment.inspect}"
       Turducken::Assignment.handle_assignment_event(job, assignment)
       render :text => 'done'
     end
