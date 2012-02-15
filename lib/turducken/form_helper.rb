@@ -20,7 +20,7 @@ module Turducken
     private
 
     def submit_url(params)
-      Turducken.fake_external_submit ? 'turducken/fake_external_submit' :
+      Turducken.fake_external_submit ? '/turducken/fake_external_submit' :
         "#{params[:turkSubmitTo]}/mturk/externalSubmit"
     end
 
