@@ -33,7 +33,7 @@ class TurduckenLaunchJob
   def self.set_notifications(job)
     # create the notification for this specific HIT Type
     notification = RTurk::Notification.new
-    notification.destination = "#{Turducken.callback_host}/mt/notifications"
+    notification.destination = "#{Turducken.callback_host}/turducken/notifications"
     notification.transport   = 'REST'
     notification.version     = '2006-05-05'
     notification.event_type  = [ "AssignmentAccepted", "AssignmentAbandoned", "AssignmentReturned", "AssignmentSubmitted", "HITReviewable", "HITExpired" ]
