@@ -14,6 +14,7 @@ module Turducken
     field :hit_reward, type: Float
     field :hit_num_assignments, type: Integer
     field :hit_lifetime_s, type: Integer
+    field :hit_assignment_duration_s, type: Integer # time user can spend on an assignment
     field :hit_question, type: String
 
     field :complete, type: Boolean
