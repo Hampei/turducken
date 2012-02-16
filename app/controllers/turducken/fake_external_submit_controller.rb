@@ -3,12 +3,12 @@ module Turducken
     before_filter :check_settings!
     
     def create
-      job = Turducken::Job.where(params['hitId']).first
+      job = Turducken::Job.where(:hit_id => params['hitId']).first
       worker = Turducken.worker_model.find_or_create_by(:turk_id => 'fake')
       assignment = Assignment.find_or_initialize_by(:assignment_id => params['assignmentId'])
       assignment.worker = worker
       assignment.answers = params
-      assignment.status = 'Submitted'
+      assignment.set_current_state(assignment.machine.states[:submitted])
       assignment.save
       # puts "fake_submit: #{job.inspect} - #{assignment.inspect}"
       Turducken::Assignment.handle_assignment_event(job, assignment)

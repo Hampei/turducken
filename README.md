@@ -117,7 +117,7 @@ Each Job has many assignments, these Assignments usually don't have to be subcla
 
 Turducken::Assignment contains:
 
- `status`: ['Abandoned', 'Submitted', 'Approved', 'Rejected']
+ `state`: ['Abandoned', 'Submitted', 'PendingApproval', 'Approved', 'Rejected', 'Errored']
  `assignment_id`: given by mturk
  `answers`: normalized hash of the anwers eg: {'worker' => {'sex' => 'Female'}}
 

@@ -18,5 +18,5 @@ describe Job do
   # it 'should have the right url' do
   #   @job.hit_question[0].should =~ %r~http://localhost/jobs~
   # end
-  
+
 end
