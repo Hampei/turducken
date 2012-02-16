@@ -29,8 +29,8 @@ module Turducken
     def self.set_defaults(attrs = {})
       self.attributes_defaults = self.attributes_defaults.merge(attrs)
     end
-    def initialize(attributes = {})
-      super(self.attributes_defaults.merge(attributes))
+    def initialize(attributes = {}, options = {})
+      super(self.attributes_defaults.merge(attributes), options)
     end
     
     class_attribute :qualifications
