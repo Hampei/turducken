@@ -3,7 +3,7 @@ class TurduckenGetAssignmentResultsJob
 
   def self.perform(hit_id, assignment_id)
     job = Turducken::Job.where(:hit_id => hit_id).first
-    hit = RTurk::Hit.new(:id => hit_id)
+    hit = RTurk::Hit.new(hit_id)
     assignments = hit.assignments
     
     assignments.each do |ass|
