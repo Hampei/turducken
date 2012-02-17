@@ -8,11 +8,11 @@ class Job < Turducken::Job
   qualification :country, {:eql => Proc.new{market}}
   qualification :approval_rate, { :gt => 60 }
   
-  def title
+  def hit_title
     'job title'
   end
   
-  def description
+  def hit_description
     'description of the job'
   end
   

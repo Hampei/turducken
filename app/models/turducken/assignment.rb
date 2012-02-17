@@ -2,71 +2,69 @@ module Turducken
   class Assignment
     include Mongoid::Document
     include Mongoid::Timestamps::Created
+    include Stateflow
+    Stateflow.persistence = :mongoid #TODO find better way of doing this. maybe gem load order?
 
-    field :status, :type => String
+    field :state, :type => String
     field :assignment_id, :type => String
     field :answers, :type => Hash, :default => {}
     field :extra, :type => Hash, :default => {}
+    field :feedback, :type => String
 
     belongs_to :job, :class_name => 'Turducken::Job'
     belongs_to :worker
+    belongs_to :assignment_result, :polymorphic => true
 
     validates_uniqueness_of :assignment_id
 
-    # TODO: start using stateflow here.
-    def approve!(feedback = nil)
-      RTurk::ApproveAssignment(:assignment_id => assignment_id, :feedback => feedback)
-      self.status = 'Approved'
-      save
-    end
-    
-    def reject!(feedback)
-      RTurk::RejectAssignment(:assignment_id => assignment_id, :feedback => feedback)
-      self.status = 'Rejected'
-      save
-    end
-    
-    def errored!(exception)
-      self.status = 'Errored'
-      self.extra[:error] = exception.inspect
-      save
-    end
-    
-    def pending_approval!
-      self.status = 'PendingApproval'
-      self.save
-    end
-  
-    # assignment has not been finished (in time) by the turker.
-    def abandoned?
-      status == 'Abandoned'
-    end
-  
-    # assignment has been done, but has not been processed yet.
-    def submitted?
-      status == 'Submitted'
-    end
+    stateflow do
+      state_column :state
+      initial :submitted
 
-    # answer has been succesfully processed by the job, but needs to be approved by some person or process.
-    # This state leaves the rturk_assignment_state on submitted.
-    def pending_approval?
-      status == 'PendingApproval'
-    end
+      # assignment has been submitted, it should not stay here long, after successfully running the event it should
+      # either move to approved or pending_approval.
+      state :submitted
 
-    # answer has been approved, turker has been paid.
-    def approved?
-      status == 'Approved'
-    end
+      # answer has been succesfully processed by the job, but needs to be approved by some person or process.
+      # This state leaves the rturk_assignment_state on submitted.
+      state :pending_approval
 
-    # answer has been rejected, either by specific code or by a user.
-    def rejected?
-      status == 'Rejected'
-    end
-    
-    # an error was thrown while processing the assignment, probably code error, needs a programmer.
-    # This state leaves the rturk_assignment_state on submitted.
-    def errored?
-      status == 'Errored'
+      # answer has been approved, turker has been paid.
+      state :approved do
+        enter do |a|
+          RTurk::ApproveAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
+        end
+      end
+
+      # will never be finished. Turker either clicked abondon button or the assignment timed out.
+      state :abandoned
+
+      # answer has been rejected, either by specific code or by a user action.
+      state :rejected do
+        enter do |a|
+          RTurk::RejectAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
+        end
+      end
+
+      # an error was thrown while processing the assignment, probably code error, needs a programmer.
+      # This state leaves the rturk_assignment_state on submitted.
+      state :errored
+
+      event :approve do
+        transitions :from => :submitted, :to => :approved
+      end
+
+      event :reject do
+        transitions :from => [:submitted, :pending_approval], :to => :rejected
+      end
+
+      event :pending_approval do
+        transitions :from => :submitted, :to => :pending_approval
+      end
+
+      event :error do
+        transitions :from => :submitted, :to => :errored
+      end
     end
 
     # create or update an assignment with information from mechanical turk.
@@ -86,7 +84,7 @@ module Turducken
       
       assignment.worker = worker
       assignment.answers = get_normalised_answers(rturk_assignment)
-      assignment.status = rturk_assignment.status
+      assignment.set_current_state(machine.states[rturk_assignment.status.underscore.to_sym])
       assignment.save
 
       handle_assignment_event(job, assignment)
@@ -104,9 +102,12 @@ module Turducken
           end
         rescue Turducken::AssignmentException => e
           logger.info("assignment #{assignment.assignment_id} rejected")
-          assignment.reject! e.feedback
+          assignment.feedback = e.feedback
+          assignment.reject!
         rescue Exception => e
-          assignment.errored! e
+          assignment.extra[:error] = e.inspect
+          assignment.extra[:backtrace] = e.backtrace
+          assignment.error!
         end
       end
           

@@ -3,3 +3,4 @@ pkg/
 spec/internal/log/*
 spec/aws.yml
 vendor/ruby
+/.idea/*

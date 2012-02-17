@@ -5,8 +5,8 @@ module Turducken
     include Stateflow
     Stateflow.persistence = :mongoid #TODO find better way of doing this. maybe gem load order?
 
-    field :title
-    field :description, :default => "read the question"
+    field :hit_title
+    field :hit_description
     field :hit_question_type # this should be either 'external' or 'questionform'
     field :hit_id
     field :hit_type_id
@@ -14,6 +14,7 @@ module Turducken
     field :hit_reward, type: Float
     field :hit_num_assignments, type: Integer
     field :hit_lifetime_s, type: Integer
+    field :hit_assignment_duration_s, type: Integer # time user can spend on an assignment
     field :hit_question, type: String
 
     field :complete, type: Boolean
@@ -29,8 +30,8 @@ module Turducken
     def self.set_defaults(attrs = {})
       self.attributes_defaults = self.attributes_defaults.merge(attrs)
     end
-    def initialize(attributes = {})
-      super(self.attributes_defaults.merge(attributes))
+    def initialize(attributes = {}, options = {})
+      super(self.attributes_defaults.merge(attributes), options)
     end
     
     class_attribute :qualifications

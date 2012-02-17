@@ -3,13 +3,15 @@ class TurduckenLaunchJob
 
   def self.perform(job_id)
     job = Turducken::Job.find(job_id)
+    return unless job.launching? or job.new?
     #TODO: verify we found the job
 
-    h = RTurk::Hit.create(:title => job.title) do |hit|
+    h = RTurk::Hit.create(:title => job.hit_title) do |hit|
       hit.max_assignments = job.hit_num_assignments
-      hit.description     = job.description
+      hit.description     = job.hit_description
       hit.reward          = job.hit_reward
-      hit.lifetime         = job.hit_lifetime_s
+      hit.lifetime        = job.hit_lifetime_s
+      hit.duration        = job.hit_assignment_duration_s
       hq = job.hit_question
       if hq.first == '<'
         hit.question_form(job.hit_question)
@@ -33,7 +35,7 @@ class TurduckenLaunchJob
   def self.set_notifications(job)
     # create the notification for this specific HIT Type
     notification = RTurk::Notification.new
-    notification.destination = "#{Turducken.callback_host}/mt/notifications"
+    notification.destination = "#{Turducken.callback_host}/turducken/notifications"
     notification.transport   = 'REST'
     notification.version     = '2006-05-05'
     notification.event_type  = [ "AssignmentAccepted", "AssignmentAbandoned", "AssignmentReturned", "AssignmentSubmitted", "HITReviewable", "HITExpired" ]

@@ -1,5 +1,5 @@
 Fabricator(:job) do
-  title {"Job Title"}
-  description {"Job description"}
+  hit_title {"Job Title"}
+  hit_description {"Job description"}
   hit_id {"HITID"}
 end

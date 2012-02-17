@@ -66,11 +66,11 @@ Create a Worker class in your app. You can extend your worker model to include i
       qualification :country, {:eql => Proc.new{market}}
       qualification :approval_rate, { :gt => 60 }
     
-      def title
+      def hit_title
         "title for the job on amazon"
       end
       
-      def description
+      def hit_description
         "Some info about what the job entails"
       end
       
@@ -125,7 +125,7 @@ Each Job has many assignments, these Assignments usually don't have to be subcla
 
 Turducken::Assignment contains:
 
- `status`: ['Abandoned', 'Submitted', 'Approved', 'Rejected']
+ `state`: ['Abandoned', 'Submitted', 'PendingApproval', 'Approved', 'Rejected', 'Errored']
  `assignment_id`: given by mturk
  `answers`: normalized hash of the anwers eg: {'worker' => {'sex' => 'Female'}}
 
