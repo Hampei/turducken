@@ -1,12 +1,19 @@
 Turducken
-=======
+=========
 
-A plugin build on top of RTurk to make interaction with amazon turk easier.
+Turducken helps make using Mechanical Turk a little bit easier. It uses Resque to manage mTurk related jobs, and stores job data in MongoDB. It gives you a controller that you can use as a Notification endpoint with mTurk.
+
+Dependencies
+------------
+
+- gem 'rturk', :git => "https://github.com/mdp/rturk.git", :branch => "3.0pre"
+- gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
+- A resque server, configured in the main app.
 
 How to use
 ----------
 
-* create initialiser
+* create an initialiser
 * create a Worker-model (include Turducken::Worker) to hold info on workers
 * subclass from Turducken::Job to create your jobs
 ** every instantiation will correspond to a HIT on amazon
@@ -14,22 +21,23 @@ How to use
 * include Turducken::Controller in controllers to create external\_forms (optional)
 
 
-### initialiser
+### Create an Initialiser
 
 puts something like this in config/initializers/turducken.rb
 
     RTurk::logger.level = Logger::DEBUG if Rails.env.development?
     RTurk.setup(ENV["AWSACCESSKEYID"], ENV["AWSSECRETACCESSKEY"], :sandbox => !Rails.env.production?)
     
-    if Settings[:webhook_host].nil?
-      host = 'http://turducken.herokuapp.com'
-    else
-      host = Settings[:webhook_host]
-    end
-    Turducken.setup(:callback_host => host)
+    #
+    # If you have a tunnel back to your dev environment, set it in MTURK_WEBHOOK_HOST
+    #
+    host = ENV["MTURK_WEBHOOK_HOST"] || 'http://turduckenapp.heroku.com'
+    Turducken.setup(callback_host: host)
 
 
 ### Worker
+
+Create a Worker class in your app. You can extend your worker model to include information you have gathered over time.
 
     class Worker
       # include Mongoid::Document / field turk_id / has_many assignments.
@@ -42,7 +50,7 @@ puts something like this in config/initializers/turducken.rb
 
 ### Turducken::Job
 
-    class Job < Turducken::Job
+    class YourJob < Turducken::Job
       field :nro_assignments_finished, :default => 0
       field :market, :type => String, :default => 'UK'
       
@@ -100,7 +108,7 @@ Fields set by system:
  `state`: [:new, :launching, :running, :finished], state_machine handled by plugin.
 
 
-#### assignments
+#### Assignments
 
 Each Job has many assignments, these Assignments usually don't have to be subclassed, instead you handle the events in your Job-class by defining callbacks and using the data in your own datastructures.
 
@@ -134,18 +142,16 @@ Turducken::Assignment contains:
          end
       end
     end
+  
+  
+Development
+-----------
 
-requirements
+Clone the repo, run the tests. Add a feature, add some tests. Keep the tests passing.
+
+
+Contributors
 ------------
-gems:
-    gem 'rturk'           , :git => "https://github.com/mdp/rturk.git", :branch => "3.0pre"
-    gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
 
-- A resque server, configured in the main app.
-
-
-TODO
-----
-
-- handle missed assignment events from amazon (when restarting app for example)
-  - Could check for all assignments in cronjob. or smarter by remembering latest assignment of last check.
+Henk Van Der Veen - github.com/hampei
+David Grandinetti - github.com/dbgrandi
