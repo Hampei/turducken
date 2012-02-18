@@ -51,7 +51,7 @@ module Turducken
       state :errored
 
       event :approve do
-        transitions :from => :submitted, :to => :approved
+        transitions :from => [:submitted, :pending_approval], :to => :approved
       end
 
       event :reject do
