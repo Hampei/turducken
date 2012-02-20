@@ -33,7 +33,7 @@ GIT
 PATH
   remote: .
   specs:
-    turducken (1.0.1)
+    turducken (1.1.0)
       bson_ext (~> 1.5)
       mongoid (~> 2.4)
       rails (~> 3.2)

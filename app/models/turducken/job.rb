@@ -20,7 +20,10 @@ module Turducken
     field :complete, type: Boolean
     field :state
 
-    
+    scope :running,  where(:state => 'Running')
+    scope :finished, where(:state => 'Finished')
+    scope :new_jobs, where(:state => 'New')
+    scope :launching, where(:state => 'Launching')
 
     has_many :assignments, :class_name => 'Turducken::Assignment'
   #  has_many :workers, :through => :assignments
