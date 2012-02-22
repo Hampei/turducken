@@ -33,6 +33,7 @@ module Turducken
       state :approved do
         enter do |a|
           RTurk::ApproveAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
+          job.turducken_assignment_event(a, :approved)
         end
       end
 
@@ -43,6 +44,7 @@ module Turducken
       state :rejected do
         enter do |a|
           RTurk::RejectAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
+          job.turducken_assignment_event(a, :rejected)
         end
       end
 

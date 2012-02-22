@@ -111,7 +111,7 @@ module Turducken
   class_attribute :turducken_assignment_callbacks
   self.turducken_assignment_callbacks = {}
   class << self
-    [:finished, :accepted, :returned, :abandoned].each do |event|
+    [:finished, :accepted, :returned, :abandoned, :approved, :rejected].each do |event|
       define_method "on_assignment_#{event}" do |&block|
         self.turducken_assignment_callbacks = self.turducken_assignment_callbacks.dup
         self.turducken_assignment_callbacks[event] ||= []
