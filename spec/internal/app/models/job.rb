@@ -16,14 +16,22 @@ class Job < Turducken::Job
     'description of the job'
   end
   
-  on_assignment_finished do |assignment|
+  on_assignment_submitted do |assignment|
     if assignment.answers['tweet'] =~ /illegal/
       raise Turducken::AssignmentException, 'the word illegal is illegal in tweets'
+    end
+    if assignment.answers['tweet'] =~ /unexpected/
+      raise 'random other error'
     end
     self.nro_assignments_finished += 1
     save
   end
-
+  
+  def do_approved(a); true; end
+  on_assignment_approved do |assignment|
+    do_approved(assignment)
+  end
+  
   def hit_question
     return Rails.application.routes.url_helpers.job_url(self), :frame_height => 300
     # "<Overview></Overview><Question></Question>"

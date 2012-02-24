@@ -76,16 +76,14 @@ module Turducken
           Resque.enqueue(TurduckenGetAssignmentResultsJob, event.hit_id, event.assignment_id)
 
         when "HITReviewable"
-          # - call GetAssignmentsForHIT to make sure we have all the HIT results
-          # - Auto-Approve any assignments if we have missed any
-          # - Dispose of the HIT?
-          # - Fire off the job.finish! event, which should update the client app UI
-          Resque.enqueue(ReviewHitJob, event.hit_id)
+          # get any missed assignments, this will cascade toward the correct state the job.
+          Resque.enqueue(TurduckenGetMissedAssignmentJob, event.hit_id)
         
         when "HITExpired"
+          # TODO: Handle this case!!!
           # - Either call DisableHIT (which takes it off the marketplace) or call
           #    the HIT or increase the payout and extend it
-          # - Should create a notification to Admin panel or possibly the user?
+          # Resque.enqueue(HitExpiredJob, event.hit_id)
         
         when "Ping"
           # - Used for Amazon Internal stuff. We should at least track these events to see how common they are

@@ -8,7 +8,11 @@ Dependencies
 
 - gem 'rturk', :git => "https://github.com/mdp/rturk.git", :branch => "3.0pre"
 - gem 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
-- A resque server, configured in the main app.
+- A resque server, configured in the main app.  
+  There should only be one worker handling the :rturk queue, this keeps the various events synced, and 
+  race-conditions to a minimum.
+- A cron job or resque cron service that calls TurduckenGetMissedAssignmentJob every few hours or so to handle any missed notifications from amazon.
+
 
 How to use
 ----------
@@ -55,7 +59,7 @@ Create a Worker class in your app. You can extend your worker model to include i
       field :market, :type => String, :default => 'UK'
       
       has_many :workers
-      # unless errors are thrown in on_assignment_finished, an assignment is approved automatically.
+      # unless errors are thrown in on_assignment_submitted, an assignment is approved automatically.
       auto_approve
     
       # instead of defining function, you can set default values like this. 
@@ -83,7 +87,7 @@ Create a Worker class in your app. You can extend your worker model to include i
       # handle incoming assignments. Will often create some object or save some result.
       # when AssignmentException is raised, the assignment is automatically rejected.
       # when other Exception is raised, the assignment is set to errored, so a programmer can have a look.
-      on_assignment_finished do |assignment|
+      on_assignment_submitted do |assignment|
         sex = assignment.aswers['sex']
         unless %w(Male Female).includes? sex
           raise Turducken::AssignmentException, 'Illegal sex value'
@@ -94,6 +98,20 @@ Create a Worker class in your app. You can extend your worker model to include i
 
         self.nro_assignments_finished += 1
         save
+      end
+      
+      # mostly for when auto-approve == false
+      # called after assignment has been approved (save has happened)
+      # ideal for progress bars
+      on_assignment_approved do |assignment|
+      end
+      
+      # called after assignment has been rejected (save has happened)
+      on_assignment_rejected do |assignment|
+      end
+      
+      # called when <hit_num_assignments> assignments are submitted and either accepted or rejected.
+      def on_hit_finished
       end
     end
 
@@ -112,16 +130,15 @@ Fields set by system:
 
 Each Job has many assignments, these Assignments usually don't have to be subclassed, instead you handle the events in your Job-class by defining callbacks and using the data in your own datastructures.
 
-    on_assignment_finished {|assignment| ... }
-    on_assignment_accepted ... TODO - implement in mt_controller
-    on_assignment_returned ...   " 
-    on_assignment_abandoned ...  " 
+    on_assignment_submitted {|assignment| ... }
+    on_assignment_approved {|assignment| ... }
+    on_assignment_rejected {|assignment| ...}
 
-    # check results, to see if turker has done his job correctly. 
-    # defaults to true.
-    def approve?(assignment)
-      return assignment.answers['foo'] > 50
-    end
+If an assignment is not auto_approved create the following jobs to approve or reject an assignment. Do not change the state of an assignment directly, since race-conditions can be dangerous here.
+
+    Resque.enqueue(TurduckenApproveAssignmentJob, assignment_id)
+    Resque.enqueue(TurduckenRejectAssignmentJob, assignment_id)
+
 
 Turducken::Assignment contains:
 
@@ -155,3 +172,10 @@ Contributors
 
 Henk Van Der Veen - github.com/hampei
 David Grandinetti - github.com/dbgrandi
+
+
+Useful links
+------------
+
+* [lifecycle of a HIT](http://mechanicalturk.typepad.com/blog/2011/04/overview-lifecycle-of-a-hit-.html)
+* [api reference](http://docs.amazonwebservices.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_OperationsArticle.html)

@@ -9,7 +9,7 @@ class TurduckenGetAssignmentResultsJob
     assignments.each do |ass|
       #find this assignment
       if ass.id == assignment_id
-        assignment = Turducken::Assignment.create_or_update_from_mturk(job, ass)
+        Turducken::Assignment.create_from_mturk(job, ass)
       end
     end
     

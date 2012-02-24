@@ -10,10 +10,10 @@ GIT
 
 GIT
   remote: https://github.com/hampei/stateflow.git
-  revision: 984ca20b4f8bf119345718cc98b790777085ecf8
+  revision: b4dfa1ca4138600a689da9b704f7970245530f11
   branch: 1.4.2
   specs:
-    stateflow (0.4.2)
+    stateflow (0.4.2.HH.4)
 
 GIT
   remote: https://github.com/mdp/rturk.git
@@ -33,7 +33,7 @@ GIT
 PATH
   remote: .
   specs:
-    turducken (1.1.0)
+    turducken (0.3.0)
       bson_ext (~> 1.5)
       mongoid (~> 2.4)
       rails (~> 3.2)

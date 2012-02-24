@@ -17,6 +17,11 @@ module Turducken
 
     validates_uniqueness_of :assignment_id
 
+    scope :rejected, where(state: 'rejected')
+    scope :approved, where(state: 'approved')
+    # TODO find a way to query for 2 options in mongoid
+    # scope :approved_or_rejected, where("state = 'rejected' or state = 'approved'")
+    
     stateflow do
       state_column :state
       initial :submitted
@@ -31,9 +36,10 @@ module Turducken
 
       # answer has been approved, turker has been paid.
       state :approved do
-        enter do |a|
-          RTurk::ApproveAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
-          job.turducken_assignment_event(a, :approved)
+        enter :rturk_approve
+        after_enter do |a|
+          Resque.enqueue(TurduckenAssignmentEventJob, a.id, :approved)
+          Resque.enqueue(TurduckenCheckJobProgressJob, a.job_id)
         end
       end
 
@@ -42,9 +48,10 @@ module Turducken
 
       # answer has been rejected, either by specific code or by a user action.
       state :rejected do
-        enter do |a|
-          RTurk::RejectAssignment(:assignment_id => a.assignment_id, :feedback => a.feedback)
-          job.turducken_assignment_event(a, :rejected)
+        enter :rturk_reject
+        after_enter do |a|
+          Resque.enqueue(TurduckenAssignmentEventJob, a.id, :rejected)
+          Resque.enqueue(TurduckenCheckJobProgressJob, a.job_id)
         end
       end
 
@@ -68,52 +75,66 @@ module Turducken
         transitions :from => :submitted, :to => :errored
       end
     end
+    
+    def rturk_approve
+      rturk_ignoring_state_error do
+        RTurk::ApproveAssignment(:assignment_id => assignment_id, :feedback => feedback)
+      end
+    end
+    
+    def rturk_reject
+      rturk_ignoring_state_error do
+        RTurk::RejectAssignment(:assignment_id => assignment_id, :feedback => feedback)
+      end
+    end
 
     # create or update an assignment with information from mechanical turk.
     # for now only handles submitted rturk_assignments. 
     # skips assignments that have already been processed.
     # calls the relevant callbacks on the job-model
     # approves or rejects the assignment if possible.
-    def self.create_or_update_from_mturk(job, rturk_assignment)
+    def self.create_from_mturk(job, rturk_assignment)
       return unless rturk_assignment.submitted? # TODO, check implementation of state changes.
-
-      # update our local assignment
-      assignment = find_or_create_by(:assignment_id => rturk_assignment.id)
-      return if assignment.pending_approval? or assignment.errored?
+      return if where(assignment_id: rturk_assignment.id).exists?
 
       #make sure we have a worker
       worker = Turducken.worker_model.find_or_create_by(:turk_id => rturk_assignment.source.worker_id)
-      
-      assignment.worker = worker
-      assignment.answers = get_normalised_answers(rturk_assignment)
+
+      assignment = new(
+        assignment_id: rturk_assignment.id,
+        answers: get_normalised_answers(rturk_assignment),
+        job: job,
+        worker: worker
+      )
       assignment.set_current_state(machine.states[rturk_assignment.status.underscore.to_sym])
       assignment.save
 
-      handle_assignment_event(job, assignment)
+      Resque.enqueue(TurduckenAssignmentSubmittedJob, assignment.id)
     end
 
-    def self.handle_assignment_event(job, assignment)
-      if assignment.submitted?
-        begin
-          job.turducken_assignment_event(assignment, :finished)
-          if job.class.auto_approve?
-            assignment.approve!
-            assignment.reload
-          else
-            assignment.pending_approval!
-          end
-        rescue Turducken::AssignmentException => e
-          logger.info("assignment #{assignment.assignment_id} rejected")
-          assignment.feedback = e.feedback
-          assignment.reject!
-        rescue Exception => e
-          assignment.extra[:error] = e.inspect
-          assignment.extra[:backtrace] = e.backtrace
-          assignment.error!
+    def handle_event(type)
+      job.turducken_assignment_event(self, type)
+    end
+
+    def handle_submitted
+      return unless submitted?
+      begin
+        job.turducken_assignment_event(self, :submitted)
+        if job.class.auto_approve?
+          approve!
+          reload
+        else
+          pending_approval!
         end
+      rescue Turducken::AssignmentException => e
+        logger.info("assignment #{assignment_id} rejected")
+        self[:feedback] = e.feedback
+        reject!
+      rescue Exception => e
+        extra['error'] = e.inspect
+        extra['backtrace'] = e.backtrace
+        error!
       end
-          
-      assignment
     end
 
   private
@@ -121,6 +142,17 @@ module Turducken
     def self.get_normalised_answers(rturk_assignment)
       answers = rturk_assignment.source.answers
       Rack::Utils.parse_nested_query(answers.to_query)
+    end
+
+    # to survive approving an approved/rejected assignment 
+    # (when amazon and mongodb are out of sync due to save error)
+    def rturk_ignoring_state_error(&block)
+      begin
+        yield
+      rescue RTurk::InvalidRequest
+        raise unless $!.message.start_with? 'AWS.MechanicalTurk.InvalidAssignmentState'
+        logger.error("amazon was in unexpected state for assignment #{self.inspect}, might want to check.")
+      end
     end
 
   end

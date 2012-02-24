@@ -1,3 +1,3 @@
 module Turducken
-  VERSION = "1.2.0"
+  VERSION = "0.6.0"
 end

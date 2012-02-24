@@ -5,8 +5,8 @@
 class TurduckenGetMissedAssignmentJob
   @queue = :mturk
 
-  def self.perform()
-    jobs = Turducken::Job.running
+  def self.perform(hit_id = nil)
+    jobs = hit_id ? Turducken::Job.running.where(:hit_id => hit_id) : Turducken::Job.running
     
     jobs.each do |job|
       hit = RTurk::Hit.new(job.hit_id)
@@ -15,7 +15,7 @@ class TurduckenGetMissedAssignmentJob
     
       assignments.each do |ass|
         if Turducken::Assignment.where(:assignment_id => ass.id).count == 0
-          Turducken::Assignment.create_or_update_from_mturk(job, ass)
+          Turducken::Assignment.create_from_mturk(job, ass)
         end
       end
     end
