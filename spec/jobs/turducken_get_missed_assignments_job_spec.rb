@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe TurduckenGetMissedAssignmentJob do
+describe TurduckenGetMissedAssignmentsJob do
 
   describe "perform" do
     before do
@@ -21,7 +21,7 @@ describe TurduckenGetMissedAssignmentJob do
     end
     it "should create the two assignments not yet in the database, but not the 1 that is in there." do
       Turducken::Assignment.should_receive(:create_from_mturk).exactly(2).times
-      Resque.enqueue(TurduckenGetMissedAssignmentJob)
+      Resque.enqueue(TurduckenGetMissedAssignmentsJob)
     end
   end
 end

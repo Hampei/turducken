@@ -2,7 +2,7 @@
 # if not. creates a new assignment. exactly like the get_assignment_results job.
 # 
 
-class TurduckenGetMissedAssignmentJob
+class TurduckenGetMissedAssignmentsJob
   @queue = :mturk
 
   def self.perform(hit_id = nil)
