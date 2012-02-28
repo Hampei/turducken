@@ -13,7 +13,14 @@ module Turducken
 
     belongs_to :job, :class_name => 'Turducken::Job'
     belongs_to :worker
-    belongs_to :assignment_result, :polymorphic => true
+    belongs_to :assignment_result, :polymorphic => true, :index => true
+    # TODO might want to make this relation sparse to minimize cost if the app doesn't need it.
+    # but need to test if this index would work as expected.
+    # index [[:assignment_result_type, Mongo::ASCENDING], [:assignment_result_id, Mongo::ASCENDING]], :sparse => true, :unique => true
+
+    index :assignment_id, :unique => true
+    index [[:job_id, Mongo::ASCENDING], [:state, Mongo::ASCENDING]]
+
 
     validates_uniqueness_of :assignment_id
 

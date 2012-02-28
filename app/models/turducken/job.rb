@@ -22,6 +22,9 @@ module Turducken
     field :complete, type: Boolean
     field :state
 
+    index :hit_id
+    index [[:state, Mongo::ASCENDING], [:_id, Mongo::DESCENDING]]
+
     scope :running,  where(:state => 'Running')
     scope :finished, where(:state => 'Finished')
     scope :new_jobs, where(:state => 'New')
@@ -147,6 +150,8 @@ module Turducken
     # if it need more assignments to fullfil the approved_assignments minimum, requests them.
     # if job is finished, finishes the job.
     def check_progress!
+      return if finished?
+      raise "State error (#{state}) in check_progress!" if new? or launching?
       if more_assignments_needed?
         extend_hit!
       elsif all_assignments_handled? && enough_assignments_approved?
