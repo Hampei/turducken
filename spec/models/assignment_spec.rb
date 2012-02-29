@@ -40,7 +40,7 @@ describe Turducken::Assignment do
         invoke
       end
       it 'should enqueue the check_progress job' do
-        Resque.should_receive(:enqueue).with(TurduckenCheckJobProgressJob, @job.id)
+        Resque.should_receive(:enqueue).with(TurduckenJobJob, :check_progress, @job.id)
         invoke
       end
     end
@@ -72,7 +72,7 @@ describe Turducken::Assignment do
         invoke
       end
       it 'should enqueue the check_progress job' do
-        Resque.should_receive(:enqueue).with(TurduckenCheckJobProgressJob, @job.id)
+        Resque.should_receive(:enqueue).with(TurduckenJobJob, :check_progress, @job.id)
         invoke
       end
     end

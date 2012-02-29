@@ -21,13 +21,48 @@ describe Job do
     # end
   end
 
+  describe 'finish transition' do
+    before do
+      @job = Fabricate(:job)
+      @job.set_current_state(Job.machine.states[:running])
+      Resque.stub(:enqueue)
+    end
+    def invoke; @job.finish; end
+
+    it 'should enqueue the hit dispose job' do
+      Resque.should_receive(:enqueue).with(TurduckenHITJob, :dispose, @job.hit_id)
+      invoke
+    end
+    it 'should enqueue the job finished callback' do
+      Resque.should_receive(:enqueue).with(TurduckenJobJob, :on_job_finished, @job.id)
+      invoke
+    end
+    
+  end
+
 
   describe 'check_progress!' do
     before do
       RTurk.stub(:ExtendHIT)
     end
     def invoke; @job.check_progress!; end
-    
+
+    it 'should raise an error when in beginning state' do
+      @job = Fabricate(:job)
+      lambda{invoke}.should raise_error
+    end
+
+    describe do
+      before do
+        @job = Fabricate(:job)
+        @job.set_current_state(Job.machine.states[:finished])
+      end
+      it 'should return when state is already finished' do
+        @job.should_not_receive(:more_assignments_needed?)
+        invoke
+      end
+    end
+
     def create_job_with_assignments(options={})
       submitted = options.delete(:submitted) || 0
       approved = options.delete(:approved) || 0
@@ -92,5 +127,7 @@ describe Job do
       end
     end
   end
+  
+  
 
 end

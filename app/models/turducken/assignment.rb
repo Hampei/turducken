@@ -46,7 +46,7 @@ module Turducken
         enter :rturk_approve
         after_enter do |a|
           Resque.enqueue(TurduckenAssignmentEventJob, a.id, :approved)
-          Resque.enqueue(TurduckenCheckJobProgressJob, a.job_id)
+          Resque.enqueue(TurduckenJobJob, :check_progress, a.job_id)
         end
       end
 
@@ -58,7 +58,7 @@ module Turducken
         enter :rturk_reject
         after_enter do |a|
           Resque.enqueue(TurduckenAssignmentEventJob, a.id, :rejected)
-          Resque.enqueue(TurduckenCheckJobProgressJob, a.job_id)
+          Resque.enqueue(TurduckenJobJob, :check_progress, a.job_id)
         end
       end
 

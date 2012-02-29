@@ -86,8 +86,10 @@ module Turducken
       state :reviewing
     
       state :finished do
-        enter :dispose_hit
-        enter :on_hit_finished
+        after_enter do |j|
+          Resque.enqueue(TurduckenHITJob, :dispose, j.hit_id)
+          Resque.enqueue(TurduckenJobJob, :on_job_finished, j.id)
+        end
       end
 
       event :launch do
@@ -195,10 +197,6 @@ module Turducken
   
     def do_launch
       Resque.enqueue(TurduckenLaunchJob, self.id)
-    end
-
-    def dispose_hit
-      # Resque.enqueue(DisoseHit, self.hit_id)
     end
 
   end

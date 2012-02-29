@@ -25,7 +25,7 @@ If an enqueue fail is not mentioned explicitly, an engineer will have to fix it.
 assignments
 -----------
 
-= Creation (GetAssignmentResults or GetMissedAssignment)
+### Creation (GetAssignmentResults or GetMissedAssignment)
 
 1. Assignment comes in from amazon with state :submitted (might have come in before)
 2. Create local Assignment{type:submitted} or find existing one.
@@ -34,7 +34,7 @@ assignments
 4. Enqueue assignment_submitted job
   * Queueu Error: will be handled by get_missed_assignment job or by engineer.
 
-= AssignmentSubmitted
+### AssignmentSubmitted
 
 1. Check if state is correct.
 2. run on_assignment_submitted callbacks on job.
@@ -44,7 +44,7 @@ assignments
    else: Enqueue assignment_pending_approval job.
   * Error: engineer create queue by hand.
   
-= AssignmentRejected
+### AssignmentRejected
 
 1. Check if state is correct (done by stateflow)
   * Error: rjob fails, engineer check state requeue or delete job.
@@ -58,7 +58,7 @@ assignments
 5. enqueue check_job_progress job
   * Error: Will be handled by cronjob over all unfinished jobs (TODO!)
 
-= AssignmentApproved
+### AssignmentApproved
 
 Same as Rejected, /reject/approve/gi
 
@@ -67,3 +67,40 @@ Same as Rejected, /reject/approve/gi
 1. run event callbacks
   * Error: rjob fails, can be requeued (depending on app)
   
+### CheckJobProgress (not yet implemented like this)
+
+1. check state
+  * if finished, ignore request
+  * if not running yet: rjob fails: Engineer should check how this could happen or can ignore.
+2. check if more assignment are needed to (after rejected)
+  * call extend_hit
+3. else check if job has all assignments and all are either approved or rejected
+  * call finish
+
+#### extend_hit
+
+1. extend hit with more assignments
+  * RTurkError: rjob fails, requeue
+2. increase hit_num_assignments
+  * MongoidError: rjob fails, engineer has fix.  
+    If this step failed before, mongo and turk would be out of sync.  
+    TODO: Better options would be to call RTurk::GetHIT and get the number from there, then we could requeue.
+3. transition state to running again (will probably still be running)
+  * Error: rjob fails, engineer has to fix.
+
+#### finish
+
+1. transition to finished state
+  * MongoidError: rjob fails, requeue
+2. enqueue disposal of hit on amazon
+3. enqueue on_job_finished
+
+### dispose HIT job
+
+1. call RTurk::DisposeHit
+  * RTurkError: rjob fails, requeue, if persists, have engineer check.
+
+### on_job_finished job
+
+1. call job#on_job_finished
+  * Error: depending on app, might requeue or have engineer check.
