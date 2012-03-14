@@ -7,6 +7,7 @@ class Job < Turducken::Job
   set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600
   qualification :country, {:eql => Proc.new{market}}
   qualification :approval_rate, { :gt => 60 }
+  qualification :adult, :eql => 1
   
   def hit_title
     'job title'

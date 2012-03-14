@@ -27,5 +27,9 @@ describe TurduckenLaunchJob do
   it 'should have added qualification approval_rate>60' do
     WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ /IntegerValue=60/ && req.body =~ /QualificationTypeId=000000000000000000L0/  }
   end
-  
+
+  it 'should have added qualification adult' do
+    WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ /QualificationTypeId=00000000000000000060/  }
+  end
+
 end
