@@ -25,10 +25,10 @@ module Turducken
     index :hit_id
     index [[:state, Mongo::ASCENDING], [:_id, Mongo::DESCENDING]]
 
-    scope :running,  where(:state => 'Running')
-    scope :finished, where(:state => 'Finished')
-    scope :new_jobs, where(:state => 'New')
-    scope :launching, where(:state => 'Launching')
+    scope :running,  where(:state => 'running')
+    scope :finished, where(:state => 'finished')
+    scope :new_jobs, where(:state => 'new')
+    scope :launching, where(:state => 'launching')
 
     has_many :assignments, :class_name => 'Turducken::Assignment'
   #  has_many :workers, :through => :assignments
