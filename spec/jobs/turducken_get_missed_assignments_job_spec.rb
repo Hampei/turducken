@@ -5,7 +5,7 @@ describe TurduckenGetMissedAssignmentsJob do
   describe "perform" do
     before do
       @job = Fabricate(:job, :hit_id => '32A8TDZQEZYRV84XKZ4Z')
-      @job.state = 'Running'
+      @job.state = 'running'
       @job.save
 
       @job.class.auto_approve false

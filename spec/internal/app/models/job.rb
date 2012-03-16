@@ -4,7 +4,8 @@ class Job < Turducken::Job
 
   has_many :workers
   auto_approve
-  set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600
+  set_defaults :hit_reward => 0.10, :hit_num_assignments => 5, :hit_lifetime_s => 3600, 
+    :hit_keywords => ['quick', 'easy']
   qualification :country, {:eql => Proc.new{market}}
   qualification :approval_rate, { :gt => 60 }
   qualification :adult, :eql => 1

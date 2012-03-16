@@ -17,6 +17,7 @@ module Turducken
     field :hit_assignment_duration_s, type: Integer, :default => 1.hour # time user can spend on an assignment
     field :hit_question, type: String
     field :require_approved_assignments, type: Integer, :default => 0
+    field :hit_keywords, type: Array
     def require_approved_assignments=(num); super(num == true ? hit_num_assignments : num); end
 
     field :complete, type: Boolean

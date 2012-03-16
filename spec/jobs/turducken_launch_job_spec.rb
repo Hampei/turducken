@@ -32,4 +32,8 @@ describe TurduckenLaunchJob do
     WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ /QualificationTypeId=00000000000000000060/  }
   end
 
+  it 'should have added the keywords' do
+    WebMock.should have_requested(:post, /amazonaws.com/).with {|req| req.body =~ /Keywords=quick....easy/  }
+  end
+
 end

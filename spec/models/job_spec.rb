@@ -127,7 +127,4 @@ describe Job do
       end
     end
   end
-  
-  
-
 end

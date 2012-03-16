@@ -12,6 +12,7 @@ class TurduckenLaunchJob
       hit.reward          = job.hit_reward
       hit.lifetime        = job.hit_lifetime_s
       hit.duration        = job.hit_assignment_duration_s
+      hit.keywords        = job.hit_keywords
       hq = job.hit_question
       if hq.first == '<'
         hit.question_form(job.hit_question)
