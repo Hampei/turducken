@@ -94,4 +94,25 @@ describe Turducken::Assignment do
       invoke
     end
   end
+
+  describe 'grant bonus' do
+    before do
+      mock_turk_operation("GrantBonus")
+    end
+    def invoke; @assignment.grant_bonus(0.10, 'well done'); end
+    it 'should have no default for bonus_amount' do
+      @assignment.bonus_amount.should be_nil
+    end
+    it 'should make the rturk request' do
+      invoke
+      WebMock.should have_requested(:post, /amazonaws.com/).with { |req| req.body =~ /Operation=GrantBonus/ &&
+        req.body =~ /Reason=well.done/ && req.body =~ /Amount=0.1/ } 
+    end
+    it 'should save the feedback and amount to the model' do
+      invoke
+      @assignment.reload
+      @assignment.feedback.should == 'well done'
+      @assignment.bonus_amount.should == 0.10
+    end
+  end
 end

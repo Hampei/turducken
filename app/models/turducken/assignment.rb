@@ -10,6 +10,7 @@ module Turducken
     field :answers, :type => Hash, :default => {}
     field :extra, :type => Hash, :default => {}
     field :feedback, :type => String
+    field :bonus_amount, :type => Float
 
     belongs_to :job, :class_name => 'Turducken::Job'
     belongs_to :worker
@@ -93,6 +94,14 @@ module Turducken
       rturk_ignoring_state_error do
         RTurk::RejectAssignment(:assignment_id => assignment_id, :feedback => feedback)
       end
+    end
+
+    def grant_bonus(amount, feedback=nil)
+      RTurk::GrantBonus(amount: amount, assignment_id: assignment_id, 
+        feedback: feedback, worker_id: worker.turk_id)
+        self[:bonus_amount] = (self[:bonus_amount] || 0) + amount
+        self[:feedback] = (self[:feedback] || '') + feedback
+        self.save
     end
 
     # create or update an assignment with information from mechanical turk.

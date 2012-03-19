@@ -136,8 +136,9 @@ Each Job has many assignments, these Assignments usually don't have to be subcla
 
 If an assignment is not auto_approved create the following jobs to approve or reject an assignment. Do not change the state of an assignment directly, since race-conditions can be dangerous here.
 
-    Resque.enqueue(TurduckenApproveAssignmentJob, assignment_id)
-    Resque.enqueue(TurduckenRejectAssignmentJob, assignment_id)
+    Resque.enqueue(TurduckenAssignmentJob, :approve, assignment_id)
+    Resque.enqueue(TurduckenAssignmentJob, :reject, assignment_id)
+    Resque.enqueue(TurduckenAssignmentJob, :grant_bonus, assignment_id, 0.10, 'well done')
 
 
 Turducken::Assignment contains:
