@@ -77,7 +77,7 @@ module Turducken
 
         when "HITReviewable"
           # get any missed assignments, this will cascade toward the correct state the job.
-          Resque.enqueue(TurduckenGetMissedAssignmentJob, event.hit_id)
+          Resque.enqueue(TurduckenGetMissedAssignmentsJob, event.hit_id)
         
         when "HITExpired"
           # TODO: Handle this case!!!
