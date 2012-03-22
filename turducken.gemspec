@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'bson_ext', "~> 1.5"
   s.add_dependency 'mongoid' , "~> 2.4"
   
-  # s.add_dependency 'rturk', :git => "https://github.com/mdp/rturk.git", :branch => "3.0pre"
+  s.add_dependency 'rturk', "~> 2.6.0"
   # s.add_dependency 'stateflow', :git => 'https://github.com/hampei/stateflow.git', :branch => '1.4.2'
   
 end

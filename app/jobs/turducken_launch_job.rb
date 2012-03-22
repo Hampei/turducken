@@ -7,7 +7,7 @@ class TurduckenLaunchJob
     #TODO: verify we found the job
 
     h = RTurk::Hit.create(:title => job.hit_title) do |hit|
-      hit.max_assignments = job.hit_num_assignments
+      hit.assignments = job.hit_num_assignments
       hit.description     = job.hit_description
       hit.reward          = job.hit_reward
       hit.lifetime        = job.hit_lifetime_s
