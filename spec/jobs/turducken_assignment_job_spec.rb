@@ -28,10 +28,11 @@ describe TurduckenAssignmentJob do
   end
 
   describe 'reject' do
-    def invoke; Resque.enqueue(TurduckenAssignmentJob, 'reject', @assignment.id); end
+    def invoke; Resque.enqueue(TurduckenAssignmentJob, 'reject', @assignment.id, 'too little'); end
     it 'should call reject! on the assignment' do
       @assignment.should_receive(:reject!)
       invoke
+      @assignment.feedback.should == 'too little'
     end
     describe 'with an assignment with wrong state' do
       it 'should raise an Stateflow:NoTransitionFound exception' do

@@ -9,6 +9,7 @@ class TurduckenAssignmentJob
     when :approve
       assignment.approve! unless assignment.approved?
     when :reject
+      assignment.feedback = args[0]
       assignment.reject! unless assignment.rejected?
     when :grant_bonus
       amount, feedback = args
