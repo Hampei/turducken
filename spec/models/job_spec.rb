@@ -52,7 +52,7 @@ describe Job do
       lambda{invoke}.should raise_error
     end
 
-    describe do
+    describe 'current state' do
       before do
         @job = Fabricate(:job)
         @job.set_current_state(Job.machine.states[:finished])

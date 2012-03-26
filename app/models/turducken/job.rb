@@ -162,6 +162,16 @@ module Turducken
       end
     end
 
+    # options:
+    #   assignments: increment nr of assignments. defaults to more_assignments_needed
+    #   seconds: increase time of the job (from now if job already expired)
+    def extend_hit!(options={})
+      options[:assignments] ||= more_assignments_needed
+      RTurk.ExtendHIT(options.merge!(:hit_id => hit_id))
+      self[:hit_num_assignments] += options[:assignments]
+      hit_extended!
+    end
+
   private
     
     def enough_assignments_approved?
@@ -181,13 +191,6 @@ module Turducken
     def more_assignments_needed
       require_approved_assignments == 0 ? 0 :
         [0, assignments.rejected.count - (hit_num_assignments - require_approved_assignments)].max
-    end
-    
-    def extend_hit!
-      increase = more_assignments_needed
-      RTurk.ExtendHIT(:hit_id => hit_id, :assignments => increase)
-      self[:hit_num_assignments] += increase
-      hit_extended!
     end
 
     def ready_to_launch?
